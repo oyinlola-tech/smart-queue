@@ -1,0 +1,27 @@
+{
+  "name": "smart-queue-system",
+  "version": "1.0.1",
+  "description": "Smart Queue Management system for public service organizations",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "express-session": "^1.18.2",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.16.0",
+    "nodemon": "^3.1.11"
+  },
+  "keywords": [
+    "queue",
+    "Management",
+    "express",
+    "mysql"
+  ],
+  "author": "Oyinlola"
+}

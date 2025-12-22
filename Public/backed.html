@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QueueSmart - Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/cdnjs.css">
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">
+                    <div class="logo-icon">Q</div>
+                    <span>QueueSmart Admin</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="/">Customer View</a></li>
+                    <li><a href="/admin/login" ><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+
+            <div class="dashboard-header">
+                <h1>Queue Management Dashboard</h1>
+                <p>Manage customer queues in real-time | Last updated: <span id="currentTime">Loading...</span></p>
+            </div>
+            
+            <div class="dashboard-stats" id="statsContainer">
+                <div class="stat-card">
+                    <h3 id="totalToday">-</h3>
+                    <p>Total Today</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="waitingCount">-</h3>
+                    <p>Waiting</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="servingCount">-</h3>
+                    <p>Currently Serving</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="servedCount">-</h3>
+                    <p>Served Today</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="avgWaitTime">-</h3>
+                    <p>Avg. Wait Time</p>
+                </div>
+            </div>
+            
+            <div class="queue-controls">
+                <div class="controls-left">
+                    <button class="btn btn-success" id="serveNextButton">
+                        <i class="fas fa-user-check"></i> Serve Next Customer
+                    </button>
+                    <button class="btn btn-danger" id="skipButton" disabled>
+                        <i class="fas fa-forward"></i> Skip Current Customer
+                    </button>
+                    <button class="btn" id="refreshDashboard">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="controls-right">
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label for="statusFilter">Status</label>
+                            <select id="statusFilter" class="filter-select">
+                                <option value="">All Status</option>
+                                <option value="waiting">Waiting</option>
+                                <option value="serving">Serving</option>
+                                <option value="served">Served</option>
+                                <option value="skipped">Skipped</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="serviceFilter">Service Type</label>
+                            <select id="serviceFilter" class="filter-select">
+                                <option value="">All Services</option>
+                                <option value="Bank Services">Bank Services</option>
+                                <option value="Hospital Services">Hospital Services</option>
+                                <option value="Government Office">Government Office</option>
+                                <option value="Clinic Services">Clinic Services</option>
+                                <option value="School Services">School Services</option>
+                                <option value="Other Services">Other Services</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="dateFilter">Date</label>
+                            <input type="date" id="dateFilter" class="filter-select">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="status-message status-serving" id="currentlyServingAlert">
+                <i class="fas fa-bullhorn"></i> Currently serving: <strong id="servingCustomer">No customer being served</strong>
+            </div>
+            
+            <div class="queue-table-container">
+                <table class="queue-table" id="queueTable">
+                    <thead>
+                        <tr>
+                            <th>Queue #</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Service / Purpose</th>
+                            <th>Status</th>
+                            <th>Check-in Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="queueTableBody">
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px;">
+                                <span class="loading-spinner"></span> Loading queue data...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination hidden" id="pagination">
+                <button class="pagination-btn" id="prevPage" disabled>Previous</button>
+                <span id="pageInfo">Page 1 of 1</span>
+                <button class="pagination-btn" id="nextPage" disabled>Next</button>
+            </div>
+            
+            <h2 style="color: var(--primary-color); margin-bottom: 20px;">Recently Served</h2>
+            <div class="queue-table-container">
+                <table class="queue-table">
+                    <thead>
+                        <tr>
+                            <th>Queue #</th>
+                            <th>Name</th>
+                            <th>Service</th>
+                            <th>Served At</th>
+                            <th>Wait Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentlyServedBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 20px;">
+                                Loading recently served customers...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2025 QueueSmart Admin Dashboard. Restricted access.</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        console.log('MAIN.JS LOADED');
+
+let allservedid = [];
+let allservingid = [];
+let allskippingid = [];
+let allwaitingid = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateCurrentTime();
+  loadDashboard();
+
+  document
+    .getElementById('refreshDashboard')
+    ?.addEventListener('click', loadDashboard);
+
+  document
+    .getElementById('serveNextButton')
+    ?.addEventListener('click', serveNextCustomer);
+
+  document
+    .getElementById('skipButton')
+    ?.addEventListener('click', skipCurrentCustomer);
+});
+
+
+function updateCurrentTime() {
+  const el = document.getElementById('currentTime');
+  if (!el) return;
+
+  setInterval(() => {
+    el.textContent = new Date().toLocaleString();
+  }, 1000);
+}
+
+
+async function loadDashboard() {
+  try {
+    const res = await fetch('/queue/list');
+    const data = await res.json();
+
+    if (!data.success) {
+      alert('Failed to load queue');
+      return;
+    }
+
+    console.log(data.entries);
+    let alldata = data.entries;
+    let todayDate =  new Date().toLocaleDateString();
+    let todayArr = [];
+    let totalWaitingArr = [];
+    let totalServeTodayArr = [];
+    let totalCheckInTime = 0;
+    let totalServeTime = 0;
+    let totalPosition =0;
+    let testt;
+    for(let i=0; i < alldata.length; i++){
+        let checktimein = alldata[i].checkin_time;
+        let checktimeintimestamp = Date.parse(checktimein);
+        let checktimeinToday = new Date(checktimeintimestamp).toLocaleDateString();
+
+        let servtime = alldata[i].serve_time;
+        let checkservetimetimestamp = Date.parse(servtime);
+        let checkservetimeToday = new Date(checkservetimetimestamp).toLocaleDateString();
+
+        if(todayDate === checktimeinToday){
+            todayArr.push(alldata[i].checkin_time);
+            totalCheckInTime += parseInt(checktimeintimestamp);
+            totalPosition++;
+            if(alldata[i].serve_time){
+                totalServeTime += parseInt(checkservetimetimestamp);
+            }
+        }
+    }
+
+    for(let i=0; i < alldata.length; i++){
+        let eachstatus = alldata[i].status;
+        if(eachstatus ==='waiting'){
+            totalWaitingArr.push(alldata[i].status);
+        }
+    }
+
+    for(let i=0; i < alldata.length; i++){
+        let servtime = alldata[i].serve_time;
+        let checkservetimetimestamp = Date.parse(servtime);
+        let checkservetimeToday = new Date(checkservetimetimestamp).toLocaleDateString();
+        if(todayDate === checkservetimeToday){
+            totalServeTodayArr.push(alldata[i].status);
+        }
+    }
+    
+    let averageCheckTimeIn = totalCheckInTime / totalPosition;
+    let averageServeTime = totalServeTime / totalPosition;
+    let averageTimeWaitSeconds = parseInt(averageServeTime - averageCheckTimeIn);
+    
+    
+    console.log(todayArr.length);
+    console.log(totalWaitingArr.length);
+    console.log(totalServeTodayArr.length);
+    console.log(totalCheckInTime, totalServeTime, totalPosition, averageCheckTimeIn, averageServeTime, averageTimeWaitSeconds);
+
+
+
+
+    document.getElementById('totalToday').textContent=todayArr.length;
+    document.getElementById('waitingCount').textContent=totalWaitingArr.length;
+    document.getElementById('servedCount').textContent=totalServeTodayArr.length;
+    document.getElementById('avgWaitTime').textContent=`${parseInt(averageTimeWaitSeconds/(1000 * 60))} mins`;
+
+    renderStats(data.entries);
+    renderQueueTable(data.entries);
+    renderCurrentlyServing(data.entries);
+  } catch (err) {
+    console.error('Dashboard load error:', err);
+  }
+}
+
+
+ function renderStats(entries) {
+/*
+  document.getElementById('totalToday').textContent = total;
+  document.getElementById('waitingCount').textContent = waiting;
+  document.getElementById('servingCount').textContent = serving;
+  document.getElementById('servedCount').textContent = served;
+  document.getElementById('avgWaitTime').textContent = timing;
+} */
+
+
+function renderCurrentlyServing(entries) {
+  const serving = entries.find(e => e.status === 'serving');
+
+  const el = document.getElementById('servingCustomer');
+  const skipBtn = document.getElementById('skipButton');
+
+  if (serving) {
+    el.textContent = `${serving.queue_number} - ${serving.full_name}`;
+    skipBtn.disabled = false;
+  } else {
+    el.textContent = 'No customer being served';
+    skipBtn.disabled = true;
+  }
+}
+}
+
+function renderQueueTable(entries) {
+  const tbody = document.getElementById('queueTableBody');
+  tbody.innerHTML = '';
+
+  if (entries.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8" style="text-align:center;">No queue entries</td>
+      </tr>
+    `;
+    return;
+  }
+
+  entries.forEach(e => {
+    const tr = document.createElement('tr');
+
+    tr.innerHTML = `
+      <td>${e.queue_number}</td>
+      <td>${e.full_name}</td>
+      <td>${e.phone}</td>
+      <td>${e.email || '-'}</td>
+      <td>${e.service_type}</td>
+      <td>${e.status}</td>
+      <td>${new Date(e.created_at).toLocaleTimeString()}</td>
+      <td>
+        ${
+          e.status === 'waiting'
+            ? `<button onclick="serveCustomer(${e.id})">Serve</button>`
+            : '-'
+        }
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+
+async function serveNextCustomer() {
+  try {
+    const res = await fetch('/queue/serve', { method: 'POST' });
+    const data = await res.json();
+
+    if (!data.success) {
+      alert(data.message || 'Cannot serve customer');
+      return;
+    }
+
+    loadDashboard();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function serveCustomer(id) {
+  try {
+    const res = await fetch('/queue/serve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+
+    const data = await res.json();
+    if (!data.success) alert(data.message);
+
+    loadDashboard();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function skipCurrentCustomer(queue_number) {
+  try {
+    const res = await fetch('/queue/skip', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }, 
+      body: JSON.stringify({ queue_number }),
+      credentials: 'same-origin' 
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      alert(data.error || 'Cannot skip customer');
+      return;
+    }
+
+    loadDashboard(); 
+  } catch (err) {
+    console.error(err);
+  }
+}
+    </script>
+</body>
+</html>

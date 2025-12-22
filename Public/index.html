@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QueueSmart - Join Queue</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/cdnjs.css">
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">
+                    <div class="logo-icon">Q</div>
+                    <span>QueueSmart</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="/">Join Queue</a></li>
+                    <li><a href="admin/login">Admin Login</a></li>
+                </ul>
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Smart Queue Management System</h1>
+                <p>Join the queue for banks, hospitals, government offices, clinics, schools, and other public services. Save time and avoid crowded waiting areas.</p>
+            </div>
+        </section>
+
+        <div class="container queue-container">
+            <div class="queue-form-container">
+                <h2>Join Queue</h2>
+                <form id="queueForm">
+                    <div class="form-group">
+                        <label for="fullName">Full Name *</label>
+                        <input type="text" id="fullName" class="form-control" placeholder="Enter your full name" required>
+                        <span class="error-message hidden" id="nameError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" class="form-control" placeholder="Enter your phone number" required>
+                        <span class="error-message hidden" id="phoneError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" class="form-control" placeholder="Enter your email address" required>
+                        <span class="error-message hidden" id="emailError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" class="form-control">
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                            <option value="Prefer not to say">Prefer not to say</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dob">Date of Birth</label>
+                        <input type="date" id="dob" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="service_type">Purpose of Visit / Service *</label>
+                        <select id="service_type" class="form-control" required>
+                            <option value="">Select a service</option>
+                            <option value="Bank Services">Bank Services</option>
+                            <option value="Hospital Services">Hospital Services</option>
+                            <option value="Government Office">Government Office</option>
+                            <option value="Clinic Services">Clinic Services</option>
+                            <option value="School Services">School Services</option>
+                            <option value="Other Services">Other Services</option>
+                        </select>
+                        <span class="error-message hidden" id="serviceError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Additional Notes (Optional)</label>
+                        <textarea id="notes" class="form-control" placeholder="Any special requirements or additional information..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-block" style="width: 100%;" id="joinButton">
+                        <i class="fas fa-plus-circle"></i> Join Queue
+                    </button>
+                </form>
+            </div>
+
+            <div class="queue-status-container">
+                <h2>Your Queue Status</h2>
+                
+                <div class="status-message hidden" id="confirmationMessage">
+                    <i class="fas fa-check-circle"></i> <span id="messageText"></span>
+                </div>
+                
+                <div class="queue-info" id="queueInfo">
+                    <p>Your Queue Number</p>
+                    <div class="queue-number" id="queueNumberDisplay">-</div>
+                    <p>Current Position</p>
+                    <div class="queue-position" id="positionDisplay">-</div>
+                    <p>Estimated Wait Time</p>
+                    <div class="estimated-time" id="waitTimeDisplay">-</div>
+                </div>
+                
+                <div class="status-message status-serving hidden" id="currentStatus">
+                    <i class="fas fa-info-circle"></i> <span id="statusText"></span>
+                </div>
+                
+                <h3>Queue Ahead of You</h3>
+                <div class="queue-list" id="queueList">
+                    <div class="queue-item">
+                        <div class="position">-</div>
+                        <div class="name">No one in queue</div>
+                        <div class="service">-</div>
+                    </div>
+                </div>
+                
+                <div class="text-center" style="margin-top: 20px;">
+                    <p><small>Updates automatically every 30 seconds</small></p>
+                    <button class="btn btn-secondary" id="refreshButton">
+                        <i class="fas fa-sync-alt"></i> Refresh Status
+                    </button>
+                    <button class="btn" id="checkQueueButton" style="margin-top: 10px;">
+                        <i class="fas fa-search"></i> Check Queue Status
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>QueueSmart</h3>
+                    <p>Smart queue management system for efficient service delivery in public service organizations.</p>
+                    <p><i class="fas fa-phone"></i> +234 9027245334</p>
+                    <p><i class="fas fa-envelope"></i> info@queuesmart.com</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="/">Join Queue</a></li>
+                        <li><a href="admin/login">Admin Login</a></li>
+                        <li><a href="#" id="checkQueueLink">Check Queue Status</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Banks</a></li>
+                        <li><a href="#">Hospitals</a></li>
+                        <li><a href="#">Government Offices</a></li>
+                        <li><a href="#">Clinics</a></li>
+                        <li><a href="#">Schools</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 QueueSmart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal hidden" id="checkQueueModal">
+        <div style="background: white; padding: 30px; border-radius: 8px; max-width: 500px; width: 90%;">
+            <h2 style="color: var(--primary-color); margin-bottom: 20px;">Check Queue Status</h2>
+            <div class="form-group">
+                <label for="queueNumberInput">Enter Your Queue Number</label>
+                <input type="text" id="queueNumberInput" class="form-control" placeholder="e.g., B-1001">
+                <span class="error-message hidden" id="queueCheckError"></span>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn" id="checkQueueSubmit">Check Status</button>
+                <button class="btn btn-secondary" id="closeModal">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <script>
+console.log('MAIN.JS LOADED');
+
+document.addEventListener('DOMContentLoaded', () => {
+    const $ = (id) => document.getElementById(id);
+
+    function show(el) {
+        if (el) el.classList.remove('hidden');
+    }
+
+    function hide(el) {
+        if (el) el.classList.add('hidden');
+    }
+
+    if ($('queueForm')) {
+        $('queueForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const data = {
+                fullName: $('fullName').value.trim(),
+                phone: $('phone').value.trim(),
+                email: $('email').value.trim(),
+                gender: $('gender').value,
+                dob: $('dob').value,
+                service_type: $('service_type').value,
+                notes: $('notes').value.trim()
+            };
+
+            try {
+                const res = await fetch('/queue/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+
+                if (!result.success) {
+                    alert(result.error || 'Failed to join queue');
+                    return;
+                }
+
+                $('queueNumberDisplay').innerText = result.queue_number;
+                $('positionDisplay').innerText = result.position;
+                $('waitTimeDisplay').innerText = result.estimated_wait + ' mins';
+
+                $('messageText').innerText = 'You have successfully joined the queue';
+                show($('confirmationMessage'));
+
+                $('queueForm').reset();
+
+                loadQueueList();
+            } catch (err) {
+                console.error(err);
+                alert('Something went wrong. Please try again.');
+            }
+        });
+    }
+
+    async function loadQueueList() {
+        try {
+            const res = await fetch('/queue/list');
+            const list = await res.json();
+
+            $('queueList').innerHTML = '';
+
+            if (!list || list.length === 0) {
+                $('queueList').innerHTML = `
+                    <div class="queue-item">
+                        <div class="position">-</div>
+                        <div class="name">No one in queue</div>
+                        <div class="service">-</div>
+                    </div>
+                `;
+                return;
+            }
+
+            list.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'queue-item';
+                div.innerHTML = `
+                    <div class="position">${index + 1}</div>
+                    <div class="name">${item.full_name}</div>
+                    <div class="service">${item.service_type}</div>
+                `;
+                $('queueList').appendChild(div);
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    $('refreshButton')?.addEventListener('click', loadQueueList);
+
+    $('checkQueueButton')?.addEventListener('click', () => {
+        show(
+            $('checkQueueModal'));
+    });
+
+    $('closeModal')?.addEventListener('click', () => {
+        hide(
+            $('checkQueueModal'));
+    });
+
+    $('checkQueueSubmit')?.addEventListener('click', async () => {
+        const queueNumber = $('queueNumberInput').value.trim();
+
+        if (!queueNumber) {
+            $('queueCheckError').innerText = 'Enter your queue number';
+            $('queueCheckError').classList.remove('hidden');
+            return;
+        }
+
+        $('queueCheckError').classList.add('hidden');
+
+        try {
+            const res = await fetch(`/queue/status?queue_number=${queueNumber}`);
+            const result = await res.json();
+
+            if (!result.success) {
+                alert(result.message || 'Queue not found');
+                return;
+            }
+
+            $('queueNumberDisplay').innerText = result.queue_number;
+            $('positionDisplay').innerText = result.position;
+            $('waitTimeDisplay').innerText = result.estimated_wait + ' 1mins';
+
+            `$('statusText').innerText = Current status: ${result.status}`;
+            show($('currentStatus'));
+
+            hide($('checkQueueModal'));
+        } catch (err) {
+            console.error(err);
+            alert('Unable to check queue status');
+        }
+    });
+
+    loadQueueList();
+});
+    </script>
+</body>
+</html>
