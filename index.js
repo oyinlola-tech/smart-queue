@@ -14,7 +14,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false }
-}));
+})); 
 
 const db = mysql.createConnection({
     host: 'localhost',
